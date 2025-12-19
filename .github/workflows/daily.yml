@@ -31,6 +31,15 @@ jobs:
           RATING_MIN: "4.5"
           USE_SHEETS: "0"
           CATEGORIES: "Ofertas gerais,Moda,Beleza,Eletrônicos,Casa e Decoração,Pets"
+
+                - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pesquisador-junior-csv
+          path: output/*.csv
+          if-no-files-found: error
+
+
         run: python junior.py
 
         run: python junior.py
