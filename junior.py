@@ -336,13 +336,43 @@ def main():
     if USE_SHEETS:
         append_to_sheet(rows_to_save)
         print("✅ Enviado para Google Sheets.")
-    else:
+        else:
+        import csv
         os.makedirs("output", exist_ok=True)
-        outpath = f"output/dia_{day_index:02d}.txt"
-        with open(outpath, "w", encoding="utf-8") as f:
-            for p, content in outputs:
-                f.write(content + "\n\n" + p["url"] + "\n\n" + ("-"*40) + "\n\n")
-        print(f"✅ Salvo em {outpath}")
+        outpath = f"output/dia_{day_index:02d}.csv"
+
+        header = [
+            "Dia", "Produto", "Link", "Preço", "Vendidos", "Avaliação", "Avaliações(qtd)",
+            "Categoria", "SimilarityKey", "CTAs", "Conteúdo Completo", "CriadoEm"
+        ]
+
+        with open(outpath, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for (p, content) in outputs:
+                # tenta puxar CTAs da linha, se existir
+                ctas = ""
+                m = re.search(r"CTA BOTÃO STORY\s*-\s*([^\n]+)", content, re.IGNORECASE)
+                if m:
+                    ctas = m.group(1).strip()
+
+                writer.writerow([
+                    day_index,
+                    p["title"],
+                    p["url"],
+                    p.get("price",""),
+                    p.get("sold",""),
+                    p.get("rating",""),
+                    p.get("reviews",""),
+                    p.get("category",""),
+                    p.get("similarity_key",""),
+                    ctas,
+                    content,
+                    created_at
+                ])
+
+        print(f"✅ CSV gerado em {outpath}")
+
 
     # Persist state
     state["day_index"] = day_index
