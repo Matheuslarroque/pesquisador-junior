@@ -21,7 +21,7 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Run Junior
+            - name: Run Junior
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: "gpt-4o-mini"
@@ -29,10 +29,10 @@ jobs:
           PER_DAY: "3"
           SOLD_MIN: "100"
           RATING_MIN: "4.5"
-          USE_SHEETS: "1"
-          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          USE_SHEETS: "0"
           CATEGORIES: "Ofertas gerais,Moda,Beleza,Eletrônicos,Casa e Decoração,Pets"
+        run: python junior.py
+
         run: python junior.py
 
       - name: Commit updated state
