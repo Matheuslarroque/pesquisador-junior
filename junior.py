@@ -327,42 +327,38 @@ def main():
         used_keys.add(p["similarity_key"])
 
     # Save to Sheets or CSV fallback  ✅ (CORRIGIDO: else alinhado)
-    if USE_SHEETS:
-        append_to_sheet(rows_to_save)
-        print("✅ Enviado para Google Sheets.")
-    else:
-        import csv
-        os.makedirs("output", exist_ok=True)
-        outpath = f"output/dia_{day_index:02d}.csv"
+    import csv
+    os.makedirs("output", exist_ok=True)
+    outpath = f"output/dia_{day_index:02d}.csv"
 
-        header = [
-            "Dia", "Produto", "Link", "Preço", "Vendidos", "Avaliação", "Avaliações(qtd)",
-            "Categoria", "SimilarityKey", "CTAs", "Conteúdo Completo", "CriadoEm"
-        ]
+    header = [
+        "Dia", "Produto", "Link", "Preço", "Vendidos", "Avaliação", "Avaliações(qtd)",
+        "Categoria", "SimilarityKey", "CTAs", "Conteúdo Completo", "CriadoEm"
+    ]
 
-        with open(outpath, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(header)
-            for (p, content) in outputs:
-                ctas = ""
-                m = re.search(r"CTA BOTÃO STORY\s*-\s*([^\n]+)", content, re.IGNORECASE)
-                if m:
-                    ctas = m.group(1).strip()
+    with open(outpath, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for (p, content) in outputs:
+            ctas = ""
+            m = re.search(r"CTA BOTÃO STORY\s*-\s*([^\n]+)", content, re.IGNORECASE)
+            if m:
+                ctas = m.group(1).strip()
 
-                writer.writerow([
-                    day_index,
-                    p["title"],
-                    p["url"],
-                    p.get("price",""),
-                    p.get("sold",""),
-                    p.get("rating",""),
-                    p.get("reviews",""),
-                    p.get("category",""),
-                    p.get("similarity_key",""),
-                    ctas,
-                    content,
-                    created_at
-                ])
+            writer.writerow([
+                day_index,
+                p["title"],
+                p["url"],
+                p.get("price",""),
+                p.get("sold",""),
+                p.get("rating",""),
+                p.get("reviews",""),
+                p.get("category",""),
+                p.get("similarity_key",""),
+                ctas,
+                content,
+                created_at
+            ])
 
         print(f"✅ CSV gerado em {outpath}")
 
