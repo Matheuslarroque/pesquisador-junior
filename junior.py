@@ -261,8 +261,8 @@ def main():
     for cat in categories:
         if len(picks) >= per_day:
             break
-        q = f"{cat} shopee"
-        results = shopee_search(q, limit=50)
+        q = cat.strip()
+results = shopee_search(q, limit=120)
 
         # Filter hard + make candidates
         candidates = []
