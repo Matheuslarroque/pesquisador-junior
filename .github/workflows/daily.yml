@@ -2,7 +2,8 @@ name: Pesquisador Junior - Daily
 
 on:
   schedule:
-    - cron: "30 10 * * *"
+    # 10:30 (America/Sao_Paulo) = 13:30 UTC
+    - cron: "30 13 * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -21,28 +24,24 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-            - name: Run Junior
+      - name: Run Junior
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: "gpt-4o-mini"
           TOTAL_DAYS: "30"
           PER_DAY: "3"
-          SOLD_MIN: "100"
+          SOLD_MIN: "1000"
           RATING_MIN: "4.5"
           USE_SHEETS: "0"
           CATEGORIES: "Ofertas gerais,Moda,Beleza,Eletrônicos,Casa e Decoração,Pets"
+        run: python junior.py
 
-                - name: Upload CSV artifact
+      - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
         with:
           name: pesquisador-junior-csv
           path: output/*.csv
           if-no-files-found: error
-
-
-        run: python junior.py
-
-        run: python junior.py
 
       - name: Commit updated state
         run: |
