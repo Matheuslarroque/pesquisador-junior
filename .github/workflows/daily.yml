@@ -30,7 +30,7 @@ jobs:
           OPENAI_MODEL: "gpt-4o-mini"
           TOTAL_DAYS: "30"
           PER_DAY: "3"
-          SOLD_MIN: "1000"
+          SOLD_MIN: "200"
           RATING_MIN: "4.5"
           USE_SHEETS: "0"
           CATEGORIES: "Ofertas gerais,Moda,Beleza,Eletrônicos,Casa e Decoração,Pets"
