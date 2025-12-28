@@ -1,4 +1,4 @@
-import os, re, json, math, time
+import os, re, json, time
 from datetime import datetime
 from dateutil import tz
 
@@ -47,8 +47,6 @@ def shopee_search(query: str, limit: int = 60):
 
     soup = BeautifulSoup(r.text, "lxml")
 
-    # Best-effort extraction: tries to find product cards and parse visible text.
-    # If this yields too few items, you can switch to an affiliate feed later (recommended for production).
     items = []
     for a in soup.find_all("a", href=True):
         href = a["href"]
@@ -258,10 +256,8 @@ def main():
     used_keys = set(state.get("used_similarity_keys", []))
 
     picks = []
-    attempts = 0
 
     # Search queries per category (simple)
-    # You can refine queries later (e.g. add "kit", "utilidades", etc.)
     for cat in categories:
         if len(picks) >= per_day:
             break
@@ -279,7 +275,6 @@ def main():
             if pid in used_ids:
                 continue
             sk = similarity_key(cat, p["title"])
-            # global anti-repeat by similarity
             if sk in used_keys:
                 continue
             p["category"] = cat
@@ -293,7 +288,6 @@ def main():
         for cand in candidates:
             if len(picks) >= per_day:
                 break
-            # ensure not too similar within the same day
             if any(c["similarity_key"] == cand["similarity_key"] for c in picks):
                 continue
             picks.append(cand)
@@ -304,7 +298,7 @@ def main():
     rows_to_save = []
     outputs = []
 
-    for idx, p in enumerate(picks, start=1):
+    for p in picks:
         content = generate_copy(p)
         outputs.append((p, content))
 
@@ -332,11 +326,11 @@ def main():
         used_ids.add(p["product_id"])
         used_keys.add(p["similarity_key"])
 
-    # Save to Sheets or CSV fallback
+    # Save to Sheets or CSV fallback  ✅ (CORRIGIDO: else alinhado)
     if USE_SHEETS:
         append_to_sheet(rows_to_save)
         print("✅ Enviado para Google Sheets.")
-        else:
+    else:
         import csv
         os.makedirs("output", exist_ok=True)
         outpath = f"output/dia_{day_index:02d}.csv"
@@ -350,7 +344,6 @@ def main():
             writer = csv.writer(f)
             writer.writerow(header)
             for (p, content) in outputs:
-                # tenta puxar CTAs da linha, se existir
                 ctas = ""
                 m = re.search(r"CTA BOTÃO STORY\s*-\s*([^\n]+)", content, re.IGNORECASE)
                 if m:
@@ -372,7 +365,6 @@ def main():
                 ])
 
         print(f"✅ CSV gerado em {outpath}")
-
 
     # Persist state
     state["day_index"] = day_index
