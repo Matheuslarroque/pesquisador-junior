@@ -259,8 +259,10 @@ def main():
 
     # Search queries per category (simple)
     for cat in categories:
-        if len(picks) >= per_day:
-            break
+        if len(picks) == 0:
+    print("⚠️ Não encontrei produtos válidos hoje. Vou encerrar sem gerar CSV.")
+    return
+
         q = cat.strip()
 results = shopee_search(q, limit=120)
 
